@@ -6,7 +6,6 @@
 
 #include "Arduino.h"
 
-#define printIIC(args)	Wire.write(args)
 inline size_t LiquidCrystal_I2C::write(uint8_t value) {
 	send(value, Rs);
 	return 1;
@@ -52,6 +51,8 @@ LiquidCrystal_I2C::LiquidCrystal_I2C(uint8_t lcd_Addr,uint8_t lcd_cols,uint8_t l
   _backlightval = LCD_NOBACKLIGHT;
 }
 
+LiquidCrystal_I2C::LiquidCrystal_I2C() { }
+
 void LiquidCrystal_I2C::oled_init(){
   _oled = true;
 	init_priv();
@@ -66,6 +67,16 @@ void LiquidCrystal_I2C::init_priv()
 	Wire.begin();
 	_displayfunction = LCD_4BITMODE | LCD_1LINE | LCD_5x8DOTS;
 	begin(_cols, _rows);  
+}
+
+void LiquidCrystal_I2C::begin(uint16_t addr, TwoWire *bus, uint8_t cols, uint8_t rows, uint8_t charsize )
+{
+	_bus = bus;
+	_Addr = addr;
+	_cols = cols;
+	_rows = rows;
+	_backlightval = LCD_NOBACKLIGHT;
+	begin(_cols, _rows, charsize);
 }
 
 void LiquidCrystal_I2C::begin(uint8_t cols, uint8_t lines, uint8_t dotsize) {
@@ -313,6 +324,10 @@ void LiquidCrystal_I2C::printstr(const char c[]){
 	//This function is not identical to the function used for "real" I2C displays
 	//it's here so the user sketch doesn't have to be changed 
 	print(c);
+}
+
+void LiquidCrystal_I2C::printIIC(int args)	{
+	Wire.write(args);
 }
 
 
